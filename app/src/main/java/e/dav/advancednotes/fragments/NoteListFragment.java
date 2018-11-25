@@ -1,13 +1,10 @@
 package e.dav.advancednotes.fragments;
 
-import android.app.Activity.*;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -22,13 +19,10 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
-import 	android.view.MenuInflater;
 
 import java.util.List;
-import java.util.zip.Inflater;
 
-import Activities.NoteActivity;
-import e.dav.advancednotes.MainActivity;
+import e.dav.advancednotes.Activities.NoteActivity;
 import e.dav.advancednotes.R;
 import e.dav.advancednotes.adapter.ItemClickListener;
 import e.dav.advancednotes.adapter.NoteListAdapter;
@@ -76,18 +70,7 @@ public class NoteListFragment extends Fragment implements View.OnCreateContextMe
         registerForContextMenu(mRootView);
 
 
-        mRootView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
-            @Override
-            public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenuInfo contextMenuInfo) {
-                MenuInflater inflater = getActivity().getMenuInflater();
-                inflater.inflate(R.menu.context_menu, contextMenu);
 
-                contextMenu.add(Menu.NONE, R.id.context_edit,0,"edit");
-                contextMenu.add(Menu.NONE, R.id.context_share,0,"share");
-                contextMenu.add(Menu.NONE, R.id.context_delete, 0, "Delete");
-
-            }
-        });
         //continue
         setupList();
         return mRootView;
@@ -102,7 +85,9 @@ public class NoteListFragment extends Fragment implements View.OnCreateContextMe
 
         switch (item.getItemId()) {
             case R.id.context_edit:
+                
                 Log.i("ContextMenu", "Item 1a was chosen");
+                Toast.makeText(getActivity(), " edit Item clicked " , Toast.LENGTH_SHORT).show();
                 return true;
             case R.id.context_share:
                 Log.i("ContextMenu", "Item 1b was chosen");
@@ -117,12 +102,13 @@ public class NoteListFragment extends Fragment implements View.OnCreateContextMe
 
     private void setupList() {
         mRecyclerView = mRootView.findViewById(R.id.note_recycler_view);
-        mRecyclerView.setHasFixedSize(true);//true
+        mRecyclerView.setHasFixedSize(false);//true
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mNotes = NoteManager.newInstance(getActivity()).getAllNotes();
+        mNotes = NoteManager.newInstance(getActivity()).getAllNotes();//async task here
         mAdapter = new NoteListAdapter(mNotes, getActivity());
         mRecyclerView.setAdapter(mAdapter);
+
 
 
         final GestureDetector mGestureDetector =
@@ -139,11 +125,19 @@ public class NoteListFragment extends Fragment implements View.OnCreateContextMe
                 View child = recyclerView.findChildViewUnder(motionEvent.getX(), motionEvent.getY());
 
                 if (child != null && mGestureDetector.onTouchEvent(motionEvent)) {
+
                     int position = recyclerView.getChildLayoutPosition(child);
                     Note selectedNote = mNotes.get((position));
                     Intent editorIntent = new Intent(getActivity(), NoteActivity.class);
                     editorIntent.putExtra("id", selectedNote.getId());
+                    startActivity(editorIntent);
+
+
+
+                //    Toast.makeText(getActivity(), " edit Item clicked "+ selectedNote.getId() , Toast.LENGTH_SHORT).show();
+
                 }
+
                 return false;
             }
 
@@ -161,25 +155,9 @@ public class NoteListFragment extends Fragment implements View.OnCreateContextMe
 
     }
 
-    ItemClickListener listener = new ItemClickListener() {
-        @Override
-        public void onItemClicked(RecyclerView.ViewHolder vh, Object item, int pos)
-        {
-            Bundle args = new Bundle();
-            args.putInt("id", (pos+1));
-            onSaveInstanceState(args);
-            FragmentTransaction t = getFragmentManager().beginTransaction();
-            t.replace(R.id.notelist, NoteLinedEditorFragment.newInstance(pos));
-            t.commit();
 
 
 
-
-
-
-            Toast.makeText(getActivity(), "Item clicked: " + (pos+1), Toast.LENGTH_SHORT).show();
-        }
-    };
 
 
 

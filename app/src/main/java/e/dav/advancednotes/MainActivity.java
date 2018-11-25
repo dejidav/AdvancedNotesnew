@@ -7,17 +7,14 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.mikepenz.fontawesome_typeface_library.FontAwesome;
 
-import Activities.NoteActivity;
+import e.dav.advancednotes.Activities.NoteActivity;
 import e.dav.advancednotes.db.DbHelper;
 
 import e.dav.advancednotes.fragments.NoteListFragment;

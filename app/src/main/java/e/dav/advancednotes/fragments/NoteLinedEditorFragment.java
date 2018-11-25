@@ -41,11 +41,15 @@ public class NoteLinedEditorFragment extends Fragment {
     public static NoteLinedEditorFragment newInstance(int id){
         NoteLinedEditorFragment fragment = new NoteLinedEditorFragment();
 
+
         if (id > 0){
             Bundle bundle = new Bundle();
             bundle.putInt("id", id);
             fragment.setArguments(bundle);
+
+
         }
+
         return fragment;
     }
 
@@ -55,14 +59,18 @@ public class NoteLinedEditorFragment extends Fragment {
             int id = args.getInt("id", 0);
             if (id > 0){
                 mCurrentNote = NoteManager.newInstance(getActivity()).getNote(id);
+             //   makeToast("current note view " + mCurrentNote.getId()+mCurrentNote.getTitle());
             }
+
         }
+
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+
         getCurrentNote();
     }
 

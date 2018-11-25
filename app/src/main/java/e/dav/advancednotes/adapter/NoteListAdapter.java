@@ -3,22 +3,31 @@ package e.dav.advancednotes.adapter;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
 import e.dav.advancednotes.R;
+import e.dav.advancednotes.fragments.NoteLinedEditorFragment;
 import e.dav.advancednotes.model.Note;
 
 public class NoteListAdapter extends RecyclerView.Adapter<NoteListAdapter.ViewHolder>{
 
     private List<Note> mNotes;
     private Context mContext;
-    private ItemClickListener itemClickListener;
+
 
 
 
@@ -26,15 +35,16 @@ public class NoteListAdapter extends RecyclerView.Adapter<NoteListAdapter.ViewHo
     public NoteListAdapter(List<Note> notes, Context context){
         mNotes = notes;
         mContext = context;
-        this.itemClickListener = itemClickListener;
+        ;
 
     }
 
 
 
 
+    @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View rowView = LayoutInflater.from(parent.getContext()).inflate(R.layout.row_note_list, parent, false);
         ViewHolder viewHolder = new ViewHolder(rowView);
         return viewHolder;
@@ -43,24 +53,53 @@ public class NoteListAdapter extends RecyclerView.Adapter<NoteListAdapter.ViewHo
 
     //HERE you bind one item of your list to the view holder
     @Override
-    public void onBindViewHolder(final ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final ViewHolder holder, final int position) {
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
 
-        //final Note mnote = mNotes.get((position));
+        final Note mnote = mNotes.get((position));
         holder.noteTitle.setText(mNotes.get((position)).getTitle());
         holder.noteCreateDate.setText(mNotes.get((position)).getReadableModifiedDate());
-/*
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                itemClickListener.onItemClicked(holder, mnote, position);
+                ItemClickListener itemClickListener = new ItemClickListener() {
+                    @Override
+                    public void onItemClicked(RecyclerView.ViewHolder vh, Object item, int pos) {
+                        this.onItemClicked(holder, mnote, position);
+                    }
+                };
+
             }
-        });*/
+        });
+
+
+        holder.itemView.setOnCreateContextMenuListener(new View.OnCreateContextMenuListener() {
+            @Override
+            public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+
+
+                contextMenu.add(Menu.NONE, R.id.context_edit,0,"edit");
+                contextMenu.add(Menu.NONE, R.id.context_share,0,"share");
+                contextMenu.add(Menu.NONE, R.id.context_delete, 0, "Delete");
+
+            }
+
+
+
+
+        });
+
+
 
 
 
     }
+
+
+
+
 
     @Override
     public int getItemCount() {
@@ -104,6 +143,8 @@ public class NoteListAdapter extends RecyclerView.Adapter<NoteListAdapter.ViewHo
         });
         alertDialog.show();
     }
+
+
 
 
 }

@@ -1,4 +1,4 @@
-package Activities;
+package e.dav.advancednotes.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,16 +8,19 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import e.dav.advancednotes.MainActivity;
 import e.dav.advancednotes.R;
 import e.dav.advancednotes.fragments.NoteLinedEditorFragment;
-
+import e.dav.advancednotes.model.Note;
+import e.dav.advancednotes.db.NoteManager;
 
 
 public class NoteActivity extends AppCompatActivity {
 
     private Toolbar mToolbar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,10 +37,12 @@ public class NoteActivity extends AppCompatActivity {
             if (args != null && args.containsKey("id")){
                 int id = args.getInt("id", 0);
                 if (id > 0){
-                    openFragment(NoteLinedEditorFragment.newInstance(id), "Editor");
+                    openFragment(NoteLinedEditorFragment.newInstance(id), NoteManager.newInstance(this).getNote(id).getTitle());
+                   // makeToast(NoteManager.newInstance(getApplicationContext()).getNote(id).getTitle()+" instancestate = null " + id);
                 }
+            }else{
+                    openFragment(NoteLinedEditorFragment.newInstance(0), "New Note");
             }
-            openFragment(NoteLinedEditorFragment.newInstance(0), "Editor");
         }
 
     }
@@ -82,9 +87,12 @@ public class NoteActivity extends AppCompatActivity {
                 .beginTransaction()
                 .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
                 .replace(R.id.container2, fragment)
-                .addToBackStack(null)
                 .commit();
         getSupportActionBar().setTitle(title);
+    }
+
+    private void makeToast(String message){
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
 
