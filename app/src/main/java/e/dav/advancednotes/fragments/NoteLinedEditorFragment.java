@@ -4,6 +4,8 @@ import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -54,15 +56,8 @@ public class NoteLinedEditorFragment extends Fragment {
     }
 
     private void getCurrentNote(){
-        Bundle args = getArguments();
-        if (args != null && args.containsKey("id")){
-            int id = args.getInt("id", 0);
-            if (id > 0){
-                mCurrentNote = NoteManager.newInstance(getActivity()).getNote(id);
-             //   makeToast("current note view " + mCurrentNote.getId()+mCurrentNote.getTitle());
-            }
-
-        }
+        GetNoteTask task = new GetNoteTask();
+        task.execute();
 
     }
 
@@ -71,7 +66,7 @@ public class NoteLinedEditorFragment extends Fragment {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        getCurrentNote();
+       // getCurrentNote();
     }
 
 
@@ -79,9 +74,9 @@ public class NoteLinedEditorFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (mCurrentNote != null){
-            populateFields();
-        }
+
+        getCurrentNote();
+
     }
 
     @Override
@@ -151,7 +146,7 @@ public class NoteLinedEditorFragment extends Fragment {
 
 
 
-    private void populateFields() {
+    private void populateFields(Note mCurrentNote) {
         mTitleEditText.setText(mCurrentNote.getTitle());
         mContentEditText.setText(mCurrentNote.getContent());
     }
@@ -237,7 +232,7 @@ public class NoteLinedEditorFragment extends Fragment {
         switch (requestCode) {
             case PICKFILE_RESULT_CODE:
                 if (resultCode == RESULT_OK) {
-                    String filePath = data.getData().getPath();
+                    String filePath = data.getData().toString();
                     mCurrentNote.setAttachment(filePath);
                 }
                 makeToast("File Attached");
@@ -246,5 +241,32 @@ public class NoteLinedEditorFragment extends Fragment {
         }
     }
 
+
+    //AsyncTask
+    public class GetNoteTask extends AsyncTask<Void, Void, Note> {
+
+
+        @Override
+        protected Note doInBackground(Void... voids) {
+            Note currentNote = new Note();
+            Bundle args = getArguments();
+            if (args != null && args.containsKey("id")){
+                int id = args.getInt("id", 0);
+                if (id > 0){
+                    currentNote = NoteManager.newInstance(getActivity()).getNote(id);
+                    //   makeToast("current note view " + mCurrentNote.getId()+mCurrentNote.getTitle());
+                }
+
+            }
+            return currentNote;
+        }
+
+        @Override
+        protected void onPostExecute(Note note) {
+            populateFields(note);
+        }
+
+
+    }
 
 }

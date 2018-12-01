@@ -13,6 +13,7 @@ import android.widget.Toast;
 import e.dav.advancednotes.MainActivity;
 import e.dav.advancednotes.R;
 import e.dav.advancednotes.fragments.NoteLinedEditorFragment;
+import e.dav.advancednotes.fragments.NoteViewFragment;
 import e.dav.advancednotes.model.Note;
 import e.dav.advancednotes.db.NoteManager;
 
@@ -37,7 +38,8 @@ public class NoteActivity extends AppCompatActivity {
             if (args != null && args.containsKey("id")){
                 int id = args.getInt("id", 0);
                 if (id > 0){
-                    openFragment(NoteLinedEditorFragment.newInstance(id), NoteManager.newInstance(this).getNote(id).getTitle());
+                    openFragment(NoteViewFragment.newInstance(id), NoteManager.newInstance(this).getNote(id).getTitle());
+                  //  openFragment(NoteLinedEditorFragment.newInstance(id), NoteManager.newInstance(this).getNote(id).getTitle());
                    // makeToast(NoteManager.newInstance(getApplicationContext()).getNote(id).getTitle()+" instancestate = null " + id);
                 }
             }else{

@@ -2,6 +2,7 @@ package e.dav.advancednotes.model;
 
 import android.database.Cursor;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -10,7 +11,7 @@ import java.util.Locale;
 
 import e.dav.advancednotes.utils.Constants;
 
-public class Note {
+public class Note implements Serializable {
     private int id;
     private String title;
     private String content;
@@ -31,6 +32,12 @@ public class Note {
 
     public Note(){
 
+    }
+
+
+    @Override
+    public String toString() {
+        return "Note [title=" + title + "content=" + content + "dateCreated="+ dateCreated + "]";
     }
 
 
@@ -57,6 +64,13 @@ public class Note {
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy - h:mm a", Locale.getDefault());
         sdf.setTimeZone(getDateModified().getTimeZone());
         Date modifiedDate = getDateModified().getTime();
+        return sdf.format(modifiedDate);
+    }
+
+    public String getReadableCreatedDate(){
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy - h:mm a", Locale.getDefault());
+        sdf.setTimeZone(getDateModified().getTimeZone());
+        Date modifiedDate = getDateCreated().getTime();
         return sdf.format(modifiedDate);
     }
 
@@ -120,4 +134,6 @@ public class Note {
     public void setAttachment(String attachment) {
         this.attachment = attachment;
     }
+
+
 }

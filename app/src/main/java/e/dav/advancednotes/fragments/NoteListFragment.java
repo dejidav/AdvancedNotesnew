@@ -1,30 +1,33 @@
 package e.dav.advancednotes.fragments;
 
 import android.content.Intent;
+
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.ContextMenu;
+
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.Menu;
-import android.view.MenuInflater;
+
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+
 import android.widget.Toast;
 
 import java.util.List;
 
 import e.dav.advancednotes.Activities.NoteActivity;
 import e.dav.advancednotes.R;
-import e.dav.advancednotes.adapter.ItemClickListener;
+
 import e.dav.advancednotes.adapter.NoteListAdapter;
 import e.dav.advancednotes.db.NoteManager;
 import e.dav.advancednotes.model.Note;
@@ -42,6 +45,10 @@ public class NoteListFragment extends Fragment implements View.OnCreateContextMe
     private RecyclerView.LayoutManager mLayoutManager;
 
 
+
+
+
+
     public NoteListFragment() {
         // Required empty public constructor
     }
@@ -53,6 +60,8 @@ public class NoteListFragment extends Fragment implements View.OnCreateContextMe
         // Inflate the layout for this fragment and hold the reference
         //in mRootView
         mRootView = inflater.inflate(R.layout.fragment_note_list, container, false);
+
+
 
         //Get a programmatic reference to the Floating Action Button
         mFab = mRootView.findViewById(R.id.fab);
@@ -71,7 +80,7 @@ public class NoteListFragment extends Fragment implements View.OnCreateContextMe
 
 
 
-        //continue
+
         setupList();
         return mRootView;
 
@@ -84,8 +93,21 @@ public class NoteListFragment extends Fragment implements View.OnCreateContextMe
     public boolean onContextItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
+
             case R.id.context_edit:
-                
+                long idLong = mAdapter.getItemId(1);// issue
+                int id = (int)idLong;
+                Note nNote = NoteManager.newInstance(getActivity()).getNote(id);
+
+                FragmentManager fragmentManager = getFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                NoteViewFragment NAME = new NoteViewFragment();
+                Bundle b = new Bundle();
+                b.putSerializable("Note", nNote);
+                NAME.setArguments(b);
+                fragmentTransaction.replace(R.id.container, NAME);
+                fragmentTransaction.commit();
+
                 Log.i("ContextMenu", "Item 1a was chosen");
                 Toast.makeText(getActivity(), " edit Item clicked " , Toast.LENGTH_SHORT).show();
                 return true;
@@ -105,9 +127,10 @@ public class NoteListFragment extends Fragment implements View.OnCreateContextMe
         mRecyclerView.setHasFixedSize(false);//true
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mNotes = NoteManager.newInstance(getActivity()).getAllNotes();//async task here
-        mAdapter = new NoteListAdapter(mNotes, getActivity());
-        mRecyclerView.setAdapter(mAdapter);
+        //execute AsyncTask here
+        GetNotesTask task = new GetNotesTask();
+        task.execute();
+
 
 
 
@@ -153,13 +176,28 @@ public class NoteListFragment extends Fragment implements View.OnCreateContextMe
         });
 
 
+
+
     }
+    //AsyncTask
+    public class GetNotesTask extends AsyncTask<Void, Void, NoteListAdapter> {
 
 
+        @Override
+        protected NoteListAdapter doInBackground(Void... voids) {
+            mNotes = NoteManager.newInstance(getActivity()).getAllNotes();
+            mAdapter = new NoteListAdapter(mNotes, getActivity());
+            return mAdapter;
+        }
+
+        @Override
+        protected void onPostExecute(NoteListAdapter noteListAdapter) {
+           // super.onPostExecute(noteListAdapter);
+            mRecyclerView.setAdapter(noteListAdapter);
+        }
 
 
-
-
+    }
 
 
 

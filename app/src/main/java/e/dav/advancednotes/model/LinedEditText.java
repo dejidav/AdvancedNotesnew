@@ -25,10 +25,6 @@ public class LinedEditText extends android.support.v7.widget.AppCompatEditText {
         paint.setColor(Color.parseColor("#e5e500"));
     }
 
-    public void setLineColor(int color) {
-        paint.setColor(color);
-    }
-
     @Override
     protected void onDraw(Canvas canvas) {
         int height = getHeight();

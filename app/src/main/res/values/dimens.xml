@@ -34,4 +34,5 @@
     <dimen name="spacing">9dp</dimen>
     <dimen name="dividerHeight">8dp</dimen>
     <dimen name="icon_width_height">30dp</dimen>
+    <dimen name="decoration_height">10dp</dimen>
 </resources>

@@ -3,7 +3,9 @@ package e.dav.advancednotes.db;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.util.Log;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,7 @@ public class NoteManager {
 
     //instance variables
     private Context mContext;
+
 
     private static NoteManager sNoteManagerInstance = null;
 
@@ -69,18 +72,22 @@ public class NoteManager {
     public List<Note> getAllNotes() {
         List<Note> notes = new ArrayList<>();
         Cursor cursor = mContext.getContentResolver().query(NoteContentProvider.CONTENT_URI, Constants.COLUMNS, null, null, null);
-        if (cursor != null){
+        if (cursor != null) {
             cursor.moveToFirst();
-            while (!cursor.isAfterLast()){
+            while (!cursor.isAfterLast()) {
                 notes.add(Note.getNotefromCursor(cursor));
                 cursor.moveToNext();
             }
             cursor.close();
-            Log.i("list of notes gotten","true");
+            Log.i("list of notes gotten", "true");
+
         }
+
         return notes;
 
     }
+
+
 
     public Note getNote(int id) {
         Note note;
@@ -93,6 +100,9 @@ public class NoteManager {
         }
         return null;
     }
+
+
+
 
 
 

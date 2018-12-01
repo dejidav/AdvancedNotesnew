@@ -97,8 +97,11 @@ public class NoteListAdapter extends RecyclerView.Adapter<NoteListAdapter.ViewHo
 
     }
 
+    @Override
+    public long getItemId(final int position) {
 
-
+        return (long)mNotes.get(position).getId();
+    }
 
 
     @Override
@@ -123,26 +126,7 @@ public class NoteListAdapter extends RecyclerView.Adapter<NoteListAdapter.ViewHo
     }
 
 
-    public void promptForDelete(final int position){
-        String fieldToBeDeleted = mNotes.get(position).getTitle();
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(mContext);
-        alertDialog.setTitle("Delete " + fieldToBeDeleted + " ?");
-        alertDialog.setMessage("Are you sure you want to delete the note " + fieldToBeDeleted + "?");
-        alertDialog.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                mNotes.remove(position);
-                notifyItemRemoved(position);
-            }
-        });
-        alertDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
-        alertDialog.show();
-    }
+
 
 
 
