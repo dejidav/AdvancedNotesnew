@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -38,7 +39,7 @@ public class NoteViewFragment extends Fragment {
     private TextView nCreationDate;
 
 
-    public NoteViewFragment(){
+    public NoteViewFragment() {
 
     }
 
@@ -49,9 +50,9 @@ public class NoteViewFragment extends Fragment {
     }
 
 
-    public static NoteViewFragment newInstance(int id){
+    public static NoteViewFragment newInstance(int id) {
         NoteViewFragment fragment = new NoteViewFragment();
-        if (id > 0){
+        if (id > 0) {
             Bundle bundle = new Bundle();
             bundle.putInt("id", id);
             fragment.setArguments(bundle);
@@ -61,16 +62,9 @@ public class NoteViewFragment extends Fragment {
         return fragment;
     }
 
-    private void getCurrentNote(){
-        Bundle args = getArguments();
-        if (args != null && args.containsKey("id")){
-            int id = args.getInt("id", 0);
-            if (id > 0){
-                mNote = NoteManager.newInstance(getActivity()).getNote(id);
-                //   makeToast("current note view " + mCurrentNote.getId()+mCurrentNote.getTitle());
-            }
-
-        }
+    private void getCurrentNote() {
+        GetNoteTask task = new GetNoteTask();
+        task.execute();
 
     }
 
@@ -92,21 +86,19 @@ public class NoteViewFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (mNote != null){
-            setUpNote();
-        }
+        getCurrentNote();
     }
 
-    private void setUpNote(){
+    private void setUpNote(Note mNote) {
         nTitle.setText(mNote.getTitle());
         nContent.setText(mNote.getContent());
         nCreationDate.setText(mNote.getReadableCreatedDate());
-        if(mNote.getAttachment()!= null) {
+        if (mNote.getAttachment() != null) {
             File img = new File(mNote.getAttachment());
-            Log.i("img path", "setUpNote: "+ mNote.getAttachment());
+            Log.i("img path", "setUpNote: " + mNote.getAttachment());
 
-                Bitmap myBitmap = BitmapFactory.decodeFile(img.getAbsolutePath());
-                nAttachment.setImageBitmap(myBitmap);
+            Bitmap myBitmap = BitmapFactory.decodeFile(img.getAbsolutePath());
+            nAttachment.setImageBitmap(myBitmap);
 
         }
     }
@@ -122,7 +114,7 @@ public class NoteViewFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        switch(item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.menu_edit:
                 FragmentManager fragmentManager = getFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -136,9 +128,9 @@ public class NoteViewFragment extends Fragment {
 
             case R.id.menu_delete:
 
-                if (mNote != null){
+                if (mNote != null) {
                     promptForDelete();
-                }else {
+                } else {
                     makeToast("Cannot delete note that has not been saved");
                 }
                 return true;
@@ -149,11 +141,11 @@ public class NoteViewFragment extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-    private void makeToast(String message){
+    private void makeToast(String message) {
         Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
     }
 
-    public void promptForDelete(){
+    public void promptForDelete() {
         final String titleOfNoteTobeDeleted = mNote.getTitle();
         AlertDialog.Builder alertDialog = new AlertDialog.Builder(getActivity());
         alertDialog.setTitle("Delete " + titleOfNoteTobeDeleted + " ?");
@@ -175,5 +167,30 @@ public class NoteViewFragment extends Fragment {
         alertDialog.show();
     }
 
+    //AsyncTask
+    public class GetNoteTask extends AsyncTask<Void, Void, Note> {
 
+
+        @Override
+        protected Note doInBackground(Void... voids) {
+           // Note currentNote = new Note();
+            Bundle args = getArguments();
+            if (args != null && args.containsKey("id")) {
+                int id = args.getInt("id", 0);
+                if (id > 0) {
+                    mNote = NoteManager.newInstance(getActivity()).getNote(id);
+                    //   makeToast("current note view " + mCurrentNote.getId()+mCurrentNote.getTitle());
+                }
+
+            }
+            return mNote;
+        }
+
+        @Override
+        protected void onPostExecute(Note note) {
+            setUpNote(note);
+        }
+
+
+    }
 }

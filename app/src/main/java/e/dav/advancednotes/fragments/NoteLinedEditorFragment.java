@@ -1,12 +1,9 @@
 package e.dav.advancednotes.fragments;
 
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -65,8 +62,8 @@ public class NoteLinedEditorFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
        // getCurrentNote();
+
     }
 
 
@@ -74,8 +71,9 @@ public class NoteLinedEditorFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
         getCurrentNote();
+
+
 
     }
 
@@ -233,10 +231,15 @@ public class NoteLinedEditorFragment extends Fragment {
             case PICKFILE_RESULT_CODE:
                 if (resultCode == RESULT_OK) {
                     String filePath = data.getData().toString();
-                    mCurrentNote.setAttachment(filePath);
+                    try {
+                        mCurrentNote.setAttachment(filePath);
+                    }catch(NullPointerException e){
+
+                    }
                 }
                 makeToast("File Attached");
                 break;
+
 
         }
     }
@@ -248,22 +251,23 @@ public class NoteLinedEditorFragment extends Fragment {
 
         @Override
         protected Note doInBackground(Void... voids) {
-            Note currentNote = new Note();
+           // Note mCurrentNote = new Note();
             Bundle args = getArguments();
             if (args != null && args.containsKey("id")){
                 int id = args.getInt("id", 0);
                 if (id > 0){
-                    currentNote = NoteManager.newInstance(getActivity()).getNote(id);
+                    mCurrentNote = NoteManager.newInstance(getActivity()).getNote(id);
                     //   makeToast("current note view " + mCurrentNote.getId()+mCurrentNote.getTitle());
                 }
 
             }
-            return currentNote;
+            return mCurrentNote;
         }
 
         @Override
         protected void onPostExecute(Note note) {
-            populateFields(note);
+            if (note !=null)
+                populateFields(note);
         }
 
 

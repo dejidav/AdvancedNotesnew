@@ -1,6 +1,5 @@
 package e.dav.advancednotes;
 
-import android.content.Context;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -10,9 +9,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.GregorianCalendar;
 
-import e.dav.advancednotes.db.DbHelper;
 import e.dav.advancednotes.db.NoteManager;
 import e.dav.advancednotes.model.Note;
 
